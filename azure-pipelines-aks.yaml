@@ -1,8 +1,6 @@
 trigger:
 - master
 
-
-
 variables:
   imageName: 'vhinfrastructure.azurecr.io/vh-docker:$(Build.BuildId)'
   azureSubscriptionEndpoint: 'Reform-CFT-VH-Dev'
@@ -15,8 +13,7 @@ stages:
   jobs:  
   - job: Build
     displayName: Build job
-    pool:
-    vmImage: 'Ubuntu-16.04'
+    pool: 'Ubuntu-16.04'
     steps:
     - task: DownloadSecureFile@1
       inputs:
