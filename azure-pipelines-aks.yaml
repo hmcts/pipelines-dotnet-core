@@ -13,7 +13,8 @@ stages:
   jobs:  
   - job: Build
     displayName: Build job
-    pool: 'Ubuntu-16.04'
+    pool:
+      vmImage: 'ubuntu-16.04'
     steps:
     - task: DownloadSecureFile@1
       inputs:
