@@ -1,0 +1,75 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build job
+    steps:
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'vh_kube_dev_helm.key.pem'
+
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'vh_kube_dev_helm.cert.pem'
+
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'vh_kube_dev_ca.cert.pem'
+
+    - task: Docker@1
+      displayName: Build image
+      inputs:
+        command: Build an image
+        azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+        azureContainerRegistry: $(azureContainerRegistry)
+        dockerFile: Dockerfile
+        imageName: $(Build.Repository.Name)
+
+    - task: Docker@1
+      displayName: Tag image
+      inputs:
+        command: Tag image
+        azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+        azureContainerRegistry: $(azureContainerRegistry)
+        imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+        arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
+
+    - task: Docker@1
+      displayName: 'Push an image'
+      inputs:
+        azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+        azureContainerRegistry: $(azureContainerRegistry)
+        command: Push an image
+        imageName: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
+
+    - task: Docker@1
+      displayName: 'Push an image'
+      inputs:
+        azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+        azureContainerRegistry: $(azureContainerRegistry)
+        command: Push an image
+        imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+
+- stage: Deploy
+  displayName: Deploy stage
+  jobs:
+  - deployment: deploy
+    displayName: Deploy job
+    environment: 'myFirstEnvironment'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: dir $(Pipeline.Workspace)
+            displayName: List Artifact Contents
+          - powershell: Write-Host "run your deployment steps"
+            displayName: Run Deployment
