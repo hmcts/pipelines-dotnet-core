@@ -1,10 +1,14 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  imageName: 'vhinfrastructure.azurecr.io/vh-docker:$(Build.BuildId)'
+  azureSubscriptionEndpoint: 'Reform-CFT-VH-Dev'
+  azureContainerRegistry: 'vhinfrastructure.azurecr.io'
+  helmVersion: '2.12.3'
 
 stages:
 - stage: Build
