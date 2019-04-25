@@ -1,8 +1,7 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'Ubuntu-16.04'
+
 
 variables:
   imageName: 'vhinfrastructure.azurecr.io/vh-docker:$(Build.BuildId)'
@@ -16,6 +15,8 @@ stages:
   jobs:  
   - job: Build
     displayName: Build job
+    pool:
+    vmImage: 'Ubuntu-16.04'
     steps:
     - task: DownloadSecureFile@1
       inputs:
